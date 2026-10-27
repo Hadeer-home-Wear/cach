@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7e8e9">
+<title>HADEER | حسابات العملاء</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="loginView" class="login-wrap">
+  <section class="login-card">
+    <div class="brand-mark">H</div>
+    <p class="eyebrow">HADEER BOUTIQUE</p>
+    <h1>حسابات العملاء</h1>
+    <p class="muted">سجّل الدخول لإدارة الديون والدفعات</p>
+    <form id="loginForm">
+      <label for="passwordInput">كلمة المرور</label>
+      <input id="passwordInput" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" required>
+      <button class="btn primary full" type="submit">دخول</button>
+      <p id="loginError" class="error" role="alert"></p>
+    </form>
+    <p class="tiny">أول دخول تجريبي: Hadeer1994</p>
+  </section>
+</div>
+
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="side-brand"><div class="brand-mark small">H</div><div><b>HADEER</b><span>إدارة الحسابات</span></div></div>
+    <button class="nav active" data-page="dashboard">⌂ <span>لوحة التحكم</span></button>
+    <button class="nav" data-page="customers">♙ <span>العملاء والديون</span></button>
+    <button class="nav" data-page="broadcast">♡ <span>إعلان بضاعة جديدة</span></button>
+    <button class="nav" data-page="settings">⚙ <span>الإعدادات</span></button>
+    <div class="sidebar-bottom"><span class="status-dot"></span> بيانات محفوظة على هذا الجهاز<br><small>اربط Supabase للحفظ السحابي</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><p class="eyebrow">HADEER BOUTIQUE</p><h2 id="pageTitle">لوحة التحكم</h2></div><button id="logoutBtn" class="btn outline">تسجيل الخروج</button></header>
+
+    <section id="dashboardPage" class="page">
+      <div class="welcome"><div><h3>أهلًا بيك 🌸</h3><p>تابع حسابات العملاء والتحصيلات من مكان واحد.</p></div><div class="welcome-flower">✿</div></div>
+      <div class="stats">
+        <article class="stat"><span>إجمالي الديون المتبقية</span><strong id="statDebt">0 ج.م</strong><small>المبالغ غير المسددة</small></article>
+        <article class="stat"><span>إجمالي ما تم تحصيله</span><strong id="statPaid">0 ج.م</strong><small>كل الدفعات المسجلة</small></article>
+        <article class="stat"><span>العملاء المسجلون</span><strong id="statCustomers">0</strong><small>إجمالي العملاء</small></article>
+        <article class="stat"><span>عملاء عليهم مبالغ</span><strong id="statOwing">0</strong><small>حسابات لم تُغلق بعد</small></article>
+      </div>
+      <div class="section-head"><div><h3>أحدث حسابات العملاء</h3><p>آخر العملاء المضافين أو المعدل حسابهم</p></div><button class="btn primary" data-action="new-customer">+ إضافة عميل</button></div>
+      <div id="recentCustomers" class="customer-list"></div>
+    </section>
+
+    <section id="customersPage" class="page hidden">
+      <div class="toolbar"><input id="customerSearch" type="search" placeholder="ابحث بالاسم أو رقم الهاتف..."><button class="btn primary" data-action="new-customer">+ إضافة عميل</button></div>
+      <div id="customerList" class="customer-list"></div>
+    </section>
+
+    <section id="broadcastPage" class="page hidden">
+      <div class="panel">
+        <div class="section-head"><div><h3>إعلان وصول بضاعة جديدة</h3><p>جهّز رسالة وقائمة أرقام العملاء لاستخدامها في واتساب.</p></div><div class="badge">بدون API</div></div>
+        <label for="broadcastText">نص الإعلان</label>
+        <textarea id="broadcastText" rows="5">🌸 جديد HADEER وصل! 🌸
+
+أحدث موديلات الملابس وصلت بأجمل التصميمات ❤️
+راسلينا على واتساب للاستفسار والطلب.
+
+HADEER — أناقتك تبدأ من هنا 🌷</textarea>
+        <div class="broadcast-actions"><button id="copyBroadcast" class="btn outline">نسخ نص الإعلان</button><button id="exportPhones" class="btn soft">تصدير أرقام العملاء CSV</button><button id="makeLinks" class="btn primary">تجهيز روابط واتساب</button></div>
+        <p class="hint">واتساب العادي لا يسمح للموقع بإرسال رسالة جماعية تلقائيًا. يمكنك استخدام الأرقام في قائمة بث واتساب؛ وصول رسائل البث التقليدية يعتمد عادةً على حفظ العميل لرقمك لديه. لا ترسل إعلانات لمن لم يوافق على استقبالها.</p>
+        <div id="broadcastLinks" class="customer-list"></div>
+      </div>
+    </section>
+
+    <section id="settingsPage" class="page hidden">
+      <div class="panel narrow">
+        <h3>الإعدادات والأمان</h3>
+        <p class="muted">غيّر كلمة المرور من هنا في أي وقت. كلمة المرور الحالية محفوظة محليًا في هذا النموذج التجريبي.</p>
+        <form id="changePasswordForm" class="form-grid">
+          <label>كلمة المرور الحالية<input id="oldPassword" type="password" required autocomplete="current-password"></label>
+          <label>كلمة المرور الجديدة<input id="newPassword" type="password" minlength="8" required autocomplete="new-password"></label>
+          <label>تأكيد كلمة المرور الجديدة<input id="confirmPassword" type="password" minlength="8" required autocomplete="new-password"></label>
+          <button class="btn primary" type="submit">حفظ كلمة المرور</button><p id="passwordMessage" class="message"></p>
+        </form>
+        <hr><h3>نسخة احتياطية</h3><p class="muted">نزّل نسخة JSON من بيانات العملاء والدفعات للاحتفاظ بها.</p><button id="backupBtn" class="btn outline">تنزيل نسخة احتياطية</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="customerDialog" class="dialog">
+  <form id="customerForm" method="dialog">
+    <div class="dialog-head"><div><p class="eyebrow">HADEER</p><h3 id="customerDialogTitle">إضافة عميل</h3></div><button type="button" class="icon-btn" id="closeCustomerDialog">×</button></div>
+    <input type="hidden" id="editCustomerId">
+    <div class="form-grid">
+      <label>اسم العميل *<input id="customerName" required maxlength="100" placeholder="اسم العميل"></label>
+      <label>رقم الموبايل / واتساب<input id="customerPhone" inputmode="tel" placeholder="01xxxxxxxxx"></label>
+      <label>ملاحظات<textarea id="customerNotes" rows="2" placeholder="ملاحظات اختيارية"></textarea></label>
+    </div>
+    <div class="dialog-actions"><button type="button" class="btn outline" id="cancelCustomer">إلغاء</button><button type="submit" class="btn primary">حفظ العميل</button></div>
+  </form>
+</dialog>
+
+<dialog id="detailDialog" class="dialog wide">
+  <div class="dialog-head"><div><p class="eyebrow">كشف حساب</p><h3 id="detailName">حساب العميل</h3></div><button type="button" class="icon-btn" id="closeDetailDialog">×</button></div>
+  <div id="detailContent"></div>
+</dialog>
+
+<dialog id="saleDialog" class="dialog">
+  <form id="saleForm" method="dialog">
+    <div class="dialog-head"><div><p class="eyebrow">عملية جديدة</p><h3 id="saleTitle">تسجيل مبيعات آجلة</h3></div><button type="button" class="icon-btn" id="closeSaleDialog">×</button></div>
+    <input type="hidden" id="saleCustomerId">
+    <div class="form-grid">
+      <label>وصف العملية<input id="saleDescription" placeholder="مثال: ملابس متنوعة" required></label>
+      <label>إجمالي المبلغ (جنيه)<input id="saleAmount" type="number" min="0.01" step="0.01" required></label>
+      <label>المدفوع الآن (اختياري)<input id="salePaid" type="number" min="0" step="0.01" value="0"></label>
+      <label>موعد السداد (اختياري)<input id="saleDueDate" type="date"></label>
+    </div>
+    <div class="dialog-actions"><button type="button" class="btn outline" id="cancelSale">إلغاء</button><button type="submit" class="btn primary">حفظ العملية</button></div>
+  </form>
+</dialog>
+
+<dialog id="paymentDialog" class="dialog">
+  <form id="paymentForm" method="dialog">
+    <div class="dialog-head"><div><p class="eyebrow">تحصيل مبلغ</p><h3>تسجيل دفعة</h3></div><button type="button" class="icon-btn" id="closePaymentDialog">×</button></div>
+    <input type="hidden" id="paymentCustomerId">
+    <div class="form-grid">
+      <label>المبلغ المدفوع (جنيه)<input id="paymentAmount" type="number" min="0.01" step="0.01" required></label>
+      <label>ملاحظة (اختياري)<input id="paymentNote" placeholder="كاش، تحويل..."></label>
+    </div>
+    <p id="paymentBalanceHint" class="hint"></p>
+    <div class="dialog-actions"><button type="button" class="btn outline" id="cancelPayment">إلغاء</button><button type="submit" class="btn primary">تأكيد الدفعة</button></div>
+  </form>
+</dialog>
+<div id="toast" class="toast" role="status"></div>
+<script src="app.js"></script>
+</body></html>
